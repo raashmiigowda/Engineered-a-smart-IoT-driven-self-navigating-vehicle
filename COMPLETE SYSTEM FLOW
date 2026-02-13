@@ -1,0 +1,13 @@
+[Ultrasonic Sensor]
+        ↓
+[Arduino / ESP8266]
+        ↓ (WiFi - HTTP POST)
+[Flask Backend API]
+        ↓
+[Database (MongoDB)]
+        ↓
+[React Frontend Dashboard]
+        ↑
+   (Control Commands)
+        ↑
+[Backend → ESP8266 → Vehicle]
