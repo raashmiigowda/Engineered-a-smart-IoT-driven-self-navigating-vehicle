@@ -1,0 +1,68 @@
+#include <ESP8266WiFi.h>
+#include <NewPing.h>
+
+#define TRIG D1
+#define ECHO D2
+#define MAX_DISTANCE 200
+
+NewPing sonar(TRIG, ECHO, MAX_DISTANCE);
+
+const char* ssid = "YOUR_WIFI";
+const char* password = "YOUR_PASSWORD";
+const char* server = "http://YOUR_BACKEND_IP:5000/data";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+
+  pinMode(D5, OUTPUT); // Motor pins
+  pinMode(D6, OUTPUT);
+}
+
+void loop() {
+  delay(1000);
+  int distance = sonar.ping_cm();
+
+  String direction;
+
+  if (distance < 20 && distance != 0) {
+    stopVehicle();
+    turnRight();
+    direction = "right";
+  } else {
+    moveForward();
+    direction = "forward";
+  }
+
+  sendData(distance, direction);
+}
+
+void moveForward() {
+  digitalWrite(D5, HIGH);
+  digitalWrite(D6, LOW);
+}
+
+void stopVehicle() {
+  digitalWrite(D5, LOW);
+  digitalWrite(D6, LOW);
+}
+
+void turnRight() {
+  digitalWrite(D5, LOW);
+  digitalWrite(D6, HIGH);
+}
+
+void sendData(int distance, String direction) {
+  WiFiClient client;
+  if (client.connect("YOUR_BACKEND_IP", 5000)) {
+    String postData = "{\"distance\":" + String(distance) + ",\"direction\":\"" + direction + "\"}";
+    
+    client.println("POST /data HTTP/1.1");
+    client.println("Host: YOUR_BACKEND_IP");
+    client.println("Content-Type: application/json");
+    client.print("Content-Length: ");
+    client.println(postData.length());
+    client.println();
+    client.println(postData);
+  }
+}
