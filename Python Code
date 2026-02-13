@@ -1,0 +1,35 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from pymongo import MongoClient
+
+app = Flask(__name__)
+CORS(app)
+
+client = MongoClient("mongodb://localhost:27017/")
+db = client["iot_vehicle"]
+collection = db["data"]
+
+@app.route('/data', methods=['POST'])
+def receive_data():
+    data = request.json
+    collection.insert_one(data)
+    return jsonify({"message": "Data stored"})
+
+@app.route('/data', methods=['GET'])
+def get_data():
+    latest = collection.find().sort("_id", -1).limit(10)
+    result = []
+    for item in latest:
+        item["_id"] = str(item["_id"])
+        result.append(item)
+    return jsonify(result)
+
+@app.route('/control', methods=['POST'])
+def control():
+    command = request.json['action']
+    print("Command:", command)
+    # Send command to ESP8266 (optional advanced)
+    return jsonify({"status": "sent"})
+
+if __name__ == '__main__':
+    app.run(debug=True)
