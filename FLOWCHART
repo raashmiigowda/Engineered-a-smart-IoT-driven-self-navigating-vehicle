@@ -1,0 +1,24 @@
+START
+  ↓
+Initialize Sensors & Motors
+  ↓
+Read Distance from Ultrasonic Sensor
+  ↓
+Is Distance < Threshold?
+   ↓ YES                      ↓ NO
+Stop Vehicle              Move Forward
+Turn Left/Right
+  ↓
+Send Data to Backend (WiFi)
+  ↓
+Backend Stores Data
+  ↓
+Frontend Fetches Data
+  ↓
+Display Live Status
+  ↓
+User Sends Control Command?
+   ↓ YES → Send to Backend → Vehicle Executes
+   ↓ NO
+  ↓
+Repeat Loop
